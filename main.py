@@ -187,6 +187,10 @@ while True:
         redBlock.xVel = 4
     elif redBlock.xVel < -4:
         redBlock.xVel = -4
+    if redBlock.yVel > 10:
+        redBlock.yVel = 10
+    elif redBlock.yVel < -10:
+        redBlock.yVel = 10
 
     redBlock.x += redBlock.xVel
     collCode = []
