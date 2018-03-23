@@ -10,6 +10,8 @@ screenSize = 1000
 
 win = pyg.display.set_mode((screenSize,screenSize))
 pyg.display.set_caption("ArdyBlocks")
+flags = pyg.DOUBLEBUF | pyg.HWSURFACE | pyg.FULLSCREEN
+pyg.display.set_mode((1280, 800), flags)
 x = 50
 y = 50
 width = 40
@@ -91,6 +93,9 @@ while True:
             pyg.quit()
 
     Keys = pyg.key.get_pressed()
+
+    if Keys[pyg.K_q]:
+        pyg.quit()
 
     if Keys[pyg.K_f] and countDown <= 0:
         if len(Bullets) < 15:
