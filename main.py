@@ -66,7 +66,7 @@ def count_FPS():
     if FPS > 0:
         deltaTime = 1/FPS
 def restart():
-    x = Globals.camera_x + 10
+    x = -Globals.camera_x + 10
     y =  10
     print(Globals.camera_x)
     return (x,y)
@@ -187,10 +187,6 @@ while True:
         redBlock.xVel = 4
     elif redBlock.xVel < -4:
         redBlock.xVel = -4
-    if redBlock.yVel > 10:
-        redBlock.yVel = 10
-    elif redBlock.yVel < -10:
-        redBlock.yVel = 10
 
     redBlock.x += redBlock.xVel
     collCode = []
