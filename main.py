@@ -16,17 +16,14 @@ x = 50
 y = 50
 width = 40
 height = 40
-acc = 2
-
-v_i = 0
+centerScreen = [screenSize/2, screenSize/2]
 cSec = 0
 cFrame = 0
 FPS = 0
 deltaTime = 0
 is_running = True
 tile_size = 32
-velMult = 50
-grav = 9
+grav = 20
 NewVel = 0
 currentVel = 0
 xVel = 0
@@ -38,18 +35,14 @@ collCode = []
 BlockMove = 0
 minplus = 2
 jump = False
+vel = 5
+lastGlobalscam_x = 0
 
 fps_font = pyg.font.SysFont('Calibri', 25, True, False)
 #fps_font = pyg.font.Font("~/Library/Fonts/Veranda.ttf", 20)
 
-
 redBlock = Player(x,y,width,height)
-
-
-vel = 5
-
 clock = pyg.time.Clock()
-
 
 def show_FPS():
     global FPS, fps_font
@@ -73,7 +66,6 @@ def restart():
     print(Globals.camera_x)
     return (x,y)
 
-
 while True:
     pyg.time.delay(20)
 
@@ -86,15 +78,13 @@ while True:
             except:
                 Bullets = []
 
-
-
     for event in pyg.event.get():
         if event.type == pyg.QUIT:
             pyg.quit()
 
     Keys = pyg.key.get_pressed()
 
-    if Keys[pyg.K_q]:
+    if Keys[pyg.K_q] or Keys[pyg.K_ESCAPE]:
         pyg.quit()
 
     if Keys[pyg.K_f] and countDown <= 0:
@@ -114,12 +104,12 @@ while True:
             redBlock.facing = 1
 
         if Keys[pyg.K_SPACE]:
-            redBlock.yVel = -grav/deltaTime
+            print(deltaTime)
+            redBlock.yVel = -200
             onGround = False
             jump = True
         elif not Keys[pyg.K_LEFT] and not Keys[pyg.K_RIGHT]:
             redBlock.xVel = 0
-
 
     else:
         if Keys[pyg.K_LEFT]:
@@ -131,10 +121,6 @@ while True:
 
 
     # Changing Camera_move
-
-
-
-
 
 
     if Keys[pyg.K_DOWN] and redBlock.yVel < 200:
@@ -161,8 +147,6 @@ while True:
         onGround = True
         if 1 in collCode:
             (redBlock.x, redBlock.y) = restart()
-
-
 
     elif 1 in collCode:
         redBlock.yVel = 0
@@ -193,16 +177,18 @@ while True:
     elif redBlock.xVel < -4:
         redBlock.xVel = -4
 
+
     redBlock.x += redBlock.xVel
     collCode = []
 
     #LOGIC
 
-
     count_FPS()
     countDown -= 1
-
-
+    if Globals.camera_x != lastGlobalscam_x:
+        centerScreen[0] -= Globals.camera_x - lastGlobalscam_x
+        print(centerScreen)
+    lastGlobalscam_x = Globals.camera_x
 
     win.fill((0,0,100))
     pyg.draw.rect(win, (10, 15, 10), (0 + Globals.camera_x, screenSize- groundSize, screenSize, groundSize))
@@ -210,12 +196,14 @@ while True:
     for rec in rectangles:
         pyg.draw.rect(win, (200,200,200), (rec[0],rec[1],rec[2],rec[3]), 10)
     #pyg.draw.rect(win, (0,200,0,), (200,0, 600,1000), 3)
+    for x in range(10):
+        pyg.draw.line(win, (0,200,0),(x*500+Globals.camera_x,0),(x*500+Globals.camera_x,screenSize), 5 )
     # Bullet Logic
 
     for bullet in Bullets:
         bullet.draw(win)
-    # Block Move Logic
 
+    # Block Move Logic
     BlockMove += minplus
     if BlockMove >= 400 or BlockMove <= 0:
         minplus = -minplus
@@ -231,11 +219,7 @@ while True:
         redBlock.x -= redBlock.xVel
         Globals.camera_move = 0
 
-
-
     show_FPS()
-
-    # DEGUB
 
     pyg.display.update()
 
