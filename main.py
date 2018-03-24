@@ -4,19 +4,21 @@ from scripts.player import *
 from scripts.projectiles import *
 from scripts.collision import *
 from scripts.globals import *
+from scripts.platforms import *
 
 pyg.init()
-screenSize = 1000
+screenSize_x = 1280
+screenSize_y = 800
 
-win = pyg.display.set_mode((screenSize,screenSize))
+win = pyg.display.set_mode((screenSize_x,screenSize_y))
 pyg.display.set_caption("ArdyBlocks")
 flags = pyg.DOUBLEBUF | pyg.HWSURFACE | pyg.FULLSCREEN
-pyg.display.set_mode((1280, 800), flags)
+pyg.display.set_mode((screenSize_x, screenSize_y), flags)
 x = 50
 y = 50
 width = 40
 height = 40
-centerScreen = [screenSize/2, screenSize/2]
+centerScreen = [screenSize_x/2, screenSize_y/2]
 cSec = 0
 cFrame = 0
 FPS = 0
@@ -39,6 +41,7 @@ vel = 5
 lastGlobalscam_x = 0
 
 fps_font = pyg.font.SysFont('Calibri', 25, True, False)
+lose_font = pyg.font.SysFont('Calibri', 150, True, False)
 #fps_font = pyg.font.Font("~/Library/Fonts/Veranda.ttf", 20)
 
 redBlock = Player(x,y,width,height)
@@ -48,6 +51,11 @@ def show_FPS():
     global FPS, fps_font
     fps_overlay =  fps_font.render(str(FPS), True, (220,220,220))
     win.blit(fps_overlay, (0,0))
+
+def show_coord(x,y):
+    global fps_font
+    overlay = fps_font.render(str(x)+" , "+str(y), True, (200,200,200))
+    win.blit(overlay, (0,15))
 
 def count_FPS():
     global cSec, cFrame, FPS, deltaTime  # cSec:current-second, cFrame:current-frame
@@ -65,12 +73,20 @@ def restart():
     y =  10
     print(Globals.camera_x)
     return (x,y)
+def youLose():
+    global fps_font
+    overlay = lose_font.render("YOU LOSE", True, (50,50,50))
+    win.blit(overlay,(10,screenSize_y/2-100))
+    overlay2 = lose_font.render("Hold Down q", True, (200,200,200))
+    overlay3 = lose_font.render("to exit game", True, (200, 200, 200))
+    win.blit(overlay2, (10,screenSize_y-200))
+    win.blit(overlay3, (10, screenSize_y - 100))
 
 while True:
     pyg.time.delay(20)
 
     for bullet in Bullets:
-        if bullet.x < screenSize + Globals.camera_x and bullet.x > 0+ Globals.camera_x:
+        if bullet.x < screenSize_x - Globals.camera_x and bullet.x > 0- Globals.camera_x:
             bullet.x += bullet.xVel
         else:
             try:
@@ -122,14 +138,21 @@ while True:
 
     # Changing Camera_move
 
+    if Keys[pyg.K_UP]:
+        redBlock.yVel = -50
 
-    if Keys[pyg.K_DOWN] and redBlock.yVel < 200:
+    elif Keys[pyg.K_DOWN] and redBlock.yVel < 200:
         redBlock.yVel += 50
 
+    rectangles = []
     rectangles = [(0 + Globals.camera_x,300,490,50,0,0), (600 + Globals.camera_x, 200+BlockMove, 400, 40, 0, minplus),
-                  (0 + Globals.camera_x,screenSize-200,screenSize*100,200,0,0),(500 + Globals.camera_x,
-                                                                                screenSize-300,100,100,0,0), (1400 + Globals.camera_x, 400+BlockMove, 300, 60, 0, minplus),
+                  (500 + Globals.camera_x,screenSize_x-300,100,100,0,0),
+                  (1400 + Globals.camera_x, 400+BlockMove, 300, 60, 0, minplus),
                   (100 + Globals.camera_x, 650, 55, 70, 0, 0)]
+    Platforms2 = Platforms
+    for list in Platforms2:
+        list[0] += Globals.camera_x - lastGlobalscam_x
+        rectangles.append(list)
 
     for rec in rectangles:
         (c,yV) = Collide_Detect(redBlock.x, redBlock.y, redBlock.width, redBlock.height, redBlock.xVel, redBlock.yVel * deltaTime, rec[0],rec[1],rec[2],rec[3], rec[4], rec[5])
@@ -164,7 +187,7 @@ while True:
         redBlock.y = redBlock.y + deltaTime * redBlock.yVel
         redBlock.yVel = redBlock.yVel + .5 * deltaTime * grav * grav
 
-    if redBlock.x > screenSize - redBlock.width - 200 and redBlock.xVel > 0:
+    if redBlock.x > screenSize_x - redBlock.width - 200 and redBlock.xVel > 0:
         Globals.camera_move = 1
 
 
@@ -191,13 +214,13 @@ while True:
     lastGlobalscam_x = Globals.camera_x
 
     win.fill((0,0,100))
-    pyg.draw.rect(win, (10, 15, 10), (0 + Globals.camera_x, screenSize- groundSize, screenSize, groundSize))
+    pyg.draw.rect(win, (10, 15, 10), (0 + Globals.camera_x, screenSize_x- groundSize, screenSize_y, groundSize))
     pyg.draw.rect(win, (225, 0, 0), (round(redBlock.x), round(redBlock.y), redBlock.width, redBlock.height))
     for rec in rectangles:
         pyg.draw.rect(win, (200,200,200), (rec[0],rec[1],rec[2],rec[3]), 10)
     #pyg.draw.rect(win, (0,200,0,), (200,0, 600,1000), 3)
-    for x in range(10):
-        pyg.draw.line(win, (0,200,0),(x*500+Globals.camera_x,0),(x*500+Globals.camera_x,screenSize), 5 )
+    #for x in range(10):
+    #pyg.draw.line(win, (0,200,0),(x*500+Globals.camera_x,0),(x*500+Globals.camera_x,screenSize_y), 5 )
     # Bullet Logic
 
     for bullet in Bullets:
@@ -218,8 +241,13 @@ while True:
         Globals.camera_x -= redBlock.xVel
         redBlock.x -= redBlock.xVel
         Globals.camera_move = 0
+    if redBlock.y > screenSize_y + 50:
+        youLose()
+        Globals.camera_x -= 20
+        time.sleep(1)
 
     show_FPS()
+    show_coord(int(redBlock.x-Globals.camera_x),int(redBlock.y-Globals.camera_y))
 
     pyg.display.update()
 
