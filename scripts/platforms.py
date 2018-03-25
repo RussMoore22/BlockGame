@@ -21,11 +21,28 @@ for list in usableData:
     Platforms.append(tempList)
 i = 0
 for list in Platforms:
-    if len(list)<6:
+    if not list:
         del Platforms[i]
     i += 1
 
 
-print(Platforms)
+class Platform(object):
+    def __init__(self, x, y, width, height, xVel, yVel,color=(230,0,230)):
+        self.x = x
+        self.y = y
+        self.xVel = xVel
+        self.yVel = yVel
+        self.width = width
+        self.height = height
+        self.color = color
+
+    def create_Platforms():
+        Platforms2 = []
+
+        for plat in Platforms:
+            Platforms2.append(Platform(plat[0],plat[1],plat[2],plat[3],plat[4],plat[5]))
+
+        return Platforms2
+
 
 

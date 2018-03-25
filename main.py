@@ -39,6 +39,7 @@ minplus = 2
 jump = False
 vel = 5
 lastGlobalscam_x = 0
+PlatformTest = Platform.create_Platforms()
 
 fps_font = pyg.font.SysFont('Calibri', 25, True, False)
 lose_font = pyg.font.SysFont('Calibri', 150, True, False)
@@ -145,17 +146,17 @@ while True:
         redBlock.yVel += 50
 
     rectangles = []
-    rectangles = [(0 + Globals.camera_x,300,490,50,0,0), (600 + Globals.camera_x, 200+BlockMove, 400, 40, 0, minplus),
-                  (500 + Globals.camera_x,screenSize_x-300,100,100,0,0),
-                  (1400 + Globals.camera_x, 400+BlockMove, 300, 60, 0, minplus),
-                  (100 + Globals.camera_x, 650, 55, 70, 0, 0)]
-    Platforms2 = Platforms
-    for list in Platforms2:
-        list[0] += Globals.camera_x - lastGlobalscam_x
-        rectangles.append(list)
+    '''
+    rectangles = [(600 + Globals.camera_x, 200+BlockMove, 400, 40, 0, minplus),
+                  (1400 + Globals.camera_x, 400+BlockMove, 300, 60, 0, minplus)]
+    '''
+
+    for platform in PlatformTest:
+        platform.x += Globals.camera_x - lastGlobalscam_x
+        rectangles.append(platform)
 
     for rec in rectangles:
-        (c,yV) = Collide_Detect(redBlock.x, redBlock.y, redBlock.width, redBlock.height, redBlock.xVel, redBlock.yVel * deltaTime, rec[0],rec[1],rec[2],rec[3], rec[4], rec[5])
+        (c,yV) = Collide_Detect(redBlock.x, redBlock.y, redBlock.width, redBlock.height, redBlock.xVel, redBlock.yVel * deltaTime, rec.x,rec.y,rec.width,rec.height, rec.xVel, rec.yVel)
         collCode.append(c)
         if c == 0 and yV != 0 and not jump:
             redBlock.y += round(yV)
@@ -175,7 +176,6 @@ while True:
         redBlock.yVel = 0
         redBlock.y += 5
 
-
     elif 2 in collCode:
         redBlock.xVel = 0
 
@@ -190,16 +190,13 @@ while True:
     if redBlock.x > screenSize_x - redBlock.width - 200 and redBlock.xVel > 0:
         Globals.camera_move = 1
 
-
     elif redBlock.x < 200 and redBlock.xVel < 0:
         Globals.camera_move = 2
-
 
     if redBlock.xVel > 4:
         redBlock.xVel = 4
     elif redBlock.xVel < -4:
         redBlock.xVel = -4
-
 
     redBlock.x += redBlock.xVel
     collCode = []
@@ -216,8 +213,8 @@ while True:
     win.fill((0,0,100))
     pyg.draw.rect(win, (10, 15, 10), (0 + Globals.camera_x, screenSize_x- groundSize, screenSize_y, groundSize))
     pyg.draw.rect(win, (225, 0, 0), (round(redBlock.x), round(redBlock.y), redBlock.width, redBlock.height))
-    for rec in rectangles:
-        pyg.draw.rect(win, (200,200,200), (rec[0],rec[1],rec[2],rec[3]), 10)
+    for rec in PlatformTest:
+        pyg.draw.rect(win, (200,200,200), (rec.x,rec.y,rec.width,rec.height), 10)
     #pyg.draw.rect(win, (0,200,0,), (200,0, 600,1000), 3)
     #for x in range(10):
     #pyg.draw.line(win, (0,200,0),(x*500+Globals.camera_x,0),(x*500+Globals.camera_x,screenSize_y), 5 )
