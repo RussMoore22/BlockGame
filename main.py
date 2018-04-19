@@ -64,7 +64,6 @@ def youLose():
 
 is_running = True
 while True:
-    print(Globals.camera_x)
     pyg.time.delay(20)
 
     # PROJECTILES
@@ -119,9 +118,13 @@ while True:
 
     for platform in PlatformTest:
         platform.x += Globals.camera_x - lastGlobalscam_x
+        if platform.xVel >0 or platform.yVel > 0:
+            Platform.move_Platform(platform, deltaTime)
 
     for rec in PlatformTest:
-        (c,yV) = Collide_Detect(redBlock.x, redBlock.y, redBlock.width, redBlock.height, redBlock.xVel, redBlock.yVel * deltaTime, rec.x,rec.y,rec.width,rec.height, rec.xVel, rec.yVel)
+        (c,yV) = Collide_Detect(redBlock.x, redBlock.y, redBlock.width, redBlock.height, redBlock.xVel*deltaTime,
+                                redBlock.yVel * deltaTime, rec.x,rec.y,rec.width,rec.height,
+                                rec.xVel*rec.dir*deltaTime, rec.yVel*rec.dir*deltaTime)
         collCode.append(c)
         if c == 0 and yV != 0 and not jump:
             redBlock.y += round(yV)
@@ -133,7 +136,7 @@ while True:
                 code.pop(collCode.index(code))
             except:
                 pass
-    # 
+    # checking Collide logic
     if 0 in collCode:
         onGround = True
         if 1 in collCode:
@@ -176,7 +179,6 @@ while True:
     # Bullet Logic
     for bullet in Bullets:
         bullet.draw(win)
-        print(bullet.x,bullet.y)
 
     # camera Logic
     if Globals.camera_move == 1:

@@ -1,6 +1,6 @@
 ' # platforms.py will ignore text in these single quotes
 
-x_2, y_2, width_2, height_2, xVel_2, yVel_2
+x_2, y_2, width_2, height_2, xVel_2, yVel_2, min, max
 (0 + Globals.camera_x,300,490,50,0,0)
             [(0 + Globals.camera_x,300,490,50,0,0), (600 + Globals.camera_x, 200+BlockMove, 400, 40, 0, minplus),
                   (500 + Globals.camera_x,screenSize_x-300,100,100,0,0),
@@ -21,4 +21,6 @@ x_2, y_2, width_2, height_2, xVel_2, yVel_2
 
 0,300,490,50,0,0-
 500,500,100,100,0,0-
-100, 650, 55, 70, 0, 0
+100, 650, 55, 70, 0, 0-
+600,200,400,50,0,50, 100, 400-
+
